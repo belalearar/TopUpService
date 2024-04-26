@@ -3,6 +3,7 @@ using Serilog;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 using TopUpService.API;
+using TopUpService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
@@ -18,7 +19,7 @@ builder.Host.ConfigureServices((context, services) =>
 
     services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
     services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
-
+    services.AddInfrastructureServices();
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGen();
     services.ConfigureHttpJsonOptions(opts =>
