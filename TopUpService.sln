@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopUpService.API", "TopUpSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopUpService.API.Test", "TopUpService.API.Test\TopUpService.API.Test.csproj", "{2DA21052-6500-4374-9BAA-A06974AB29F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopUpService.Common", "TopUpService.Common\TopUpService.Common.csproj", "{8218DE1F-1D98-458C-AAB5-F1B83A074E5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopUpService.Infrastructure", "TopUpService.Infrastructure\TopUpService.Infrastructure.csproj", "{20D3D785-FE69-479A-A6D5-467A421423D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{2DA21052-6500-4374-9BAA-A06974AB29F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DA21052-6500-4374-9BAA-A06974AB29F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DA21052-6500-4374-9BAA-A06974AB29F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8218DE1F-1D98-458C-AAB5-F1B83A074E5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8218DE1F-1D98-458C-AAB5-F1B83A074E5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8218DE1F-1D98-458C-AAB5-F1B83A074E5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8218DE1F-1D98-458C-AAB5-F1B83A074E5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20D3D785-FE69-479A-A6D5-467A421423D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20D3D785-FE69-479A-A6D5-467A421423D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20D3D785-FE69-479A-A6D5-467A421423D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20D3D785-FE69-479A-A6D5-467A421423D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

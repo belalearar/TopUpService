@@ -7,3 +7,7 @@
 /TopUpService.API/bin
 /TopUpService.API.Test/bin
 /TopUpService.API.Test/obj
+/TopUpService.Common/obj
+/TopUpService.Infrastructure/obj
+/TopUpService.Common/bin
+/TopUpService.Infrastructure/bin
