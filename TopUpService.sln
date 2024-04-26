@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopUpService.API", "TopUpService.API\TopUpService.API.csproj", "{C106D65B-ACB1-497E-9005-EB85016EF41B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopUpService.API.Test", "TopUpService.API.Test\TopUpService.API.Test.csproj", "{2DA21052-6500-4374-9BAA-A06974AB29F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C106D65B-ACB1-497E-9005-EB85016EF41B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C106D65B-ACB1-497E-9005-EB85016EF41B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C106D65B-ACB1-497E-9005-EB85016EF41B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DA21052-6500-4374-9BAA-A06974AB29F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DA21052-6500-4374-9BAA-A06974AB29F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DA21052-6500-4374-9BAA-A06974AB29F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DA21052-6500-4374-9BAA-A06974AB29F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
