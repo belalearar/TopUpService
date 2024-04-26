@@ -22,10 +22,17 @@ namespace TopUpService.Infrastructure.Service
             var response = _beneficiaryRepository.AddBeneficiary(model);
             return response;
         }
+
+        public List<string> GetAllTopUpOptions()
+        {
+            return Constants.GetTopUpOptions();
+        }
+
         public List<BeneficiaryResponseModel> GetAllUserBeneficiaries(int userId)
         {
             var response = _beneficiaryRepository.GetByUserId(userId);
             return response.Select(a=>(BeneficiaryResponseModel)a).ToList();
         }
+
     }
 }
