@@ -5,8 +5,10 @@ namespace TopUpService.Common.Service
 {
     public interface IBeneficiaryService
     {
-        AddNewBeneficiaryResponseModel AddNewBeneficiary(AddNewBeneficiaryRequestModel model);
+        GenericResponseModel AddNewBeneficiary(AddNewBeneficiaryRequestModel model);
         List<string> GetAllTopUpOptions();
         List<BeneficiaryResponseModel> GetAllUserBeneficiaries(int userId);
+        BeneficiaryResponseModel GetBeneficiaryBalance(Guid id);
+        GenericResponseModel TopUpBeneficiary(TopUpRequestModel model);
     }
 }

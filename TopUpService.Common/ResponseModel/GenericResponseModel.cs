@@ -1,8 +1,8 @@
 ﻿namespace TopUpService.Common.ResponseModel
 {
-    public class AddNewBeneficiaryResponseModel
+    public class GenericResponseModel
     {
-        public AddNewBeneficiaryResponseModel(bool isSuccess, string message = "")
+        public GenericResponseModel(bool isSuccess, string message = "")
         {
             IsSuccess = isSuccess;
             Message = message;

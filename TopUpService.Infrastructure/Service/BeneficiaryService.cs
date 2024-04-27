@@ -18,7 +18,7 @@ namespace TopUpService.Infrastructure.Service
             _beneficiaryRepository = beneficiaryRepository;
         }
 
-        public AddNewBeneficiaryResponseModel AddNewBeneficiary(AddNewBeneficiaryRequestModel model)
+        public GenericResponseModel AddNewBeneficiary(AddNewBeneficiaryRequestModel model)
         {
             var response = _beneficiaryRepository.AddBeneficiary(model);
             return response;
@@ -35,5 +35,16 @@ namespace TopUpService.Infrastructure.Service
             return response.Select(a=>(BeneficiaryResponseModel)a).ToList();
         }
 
+        public BeneficiaryResponseModel GetBeneficiaryBalance(Guid id)
+        {
+            var response = _beneficiaryRepository.GetBeneficiaryBalance(id);
+            return (BeneficiaryResponseModel)response;
+        }
+
+        public GenericResponseModel TopUpBeneficiary(TopUpRequestModel model)
+        {
+            GenericResponseModel response = _beneficiaryRepository.TopUpBeneficiary(model);
+            return response;
+        }
     }
 }

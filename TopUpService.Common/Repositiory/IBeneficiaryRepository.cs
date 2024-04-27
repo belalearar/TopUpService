@@ -6,7 +6,9 @@ namespace TopUpService.Common.Repositiory
 {
     public interface IBeneficiaryRepository
     {
-        AddNewBeneficiaryResponseModel AddBeneficiary(AddNewBeneficiaryRequestModel model);
+        GenericResponseModel AddBeneficiary(AddNewBeneficiaryRequestModel model);
+        BeneficiaryResponseModel GetBeneficiaryBalance(Guid id);
         List<Beneficiary> GetByUserId(int userId);
+        GenericResponseModel TopUpBeneficiary(TopUpRequestModel model);
     }
 }
