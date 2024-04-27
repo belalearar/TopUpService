@@ -8,7 +8,9 @@ namespace TopUpService.Common.Repositiory
     {
         GenericResponseModel AddBeneficiary(AddNewBeneficiaryRequestModel model);
         BeneficiaryResponseModel GetBeneficiaryBalance(Guid id);
+        Beneficiary GetBeneficiaryById(Guid beneficiaryId);
         List<Beneficiary> GetByUserId(int userId);
+        List<Transaction> GetByUserTransactions(int userId, DateTime fromTime, DateTime toTime, Guid? beneficiaryId = null);
         GenericResponseModel TopUpBeneficiary(TopUpRequestModel model);
     }
 }

@@ -66,49 +66,7 @@ namespace TopUpService.Infrastructure.Repositiory
         {
             try
             {
-                var beneficiary = beneficiaries.FirstOrDefault(a => a.Id.Equals(model.BeneficiaryId));
-                if (beneficiary == null)
-                {
-                    return new(false, "Beneficiary Not Found.");
-                }
-
-                if (beneficiary.Balance != 0 && model.TopUpValue > beneficiary.Balance)
-                {
-                    return new(false, "Top Up Value Should Be Less Than Or Equal Balance.");
-                }
-
-                var fromTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                var toTime = fromTime.AddMonths(1).AddDays(-1);
-
-                var userTransactions = transactions.Where(a => a.UserId.Equals(model.UserId) &&
-                                                               a.CreatedAt >= fromTime &&
-                                                               a.CreatedAt <= toTime &&
-                                                               a.BeneficiaryId == model.BeneficiaryId);
-
-                var userMonthTransactions = transactions.Where(a => a.UserId.Equals(model.UserId) &&
-                                                               a.CreatedAt >= fromTime &&
-                                                               a.CreatedAt <= toTime);
-
-                if (model.IsVerified)
-                {
-                    if (userTransactions.Sum(a => a.Amount) + model.TopUpValue > 500)
-                    {
-                        return new(false, "User Is Verified, Exceed The Max Top Up Value.");
-                    }
-                }
-                else
-                {
-                    if (userTransactions.Sum(a => a.Amount) + model.TopUpValue > 1000)
-                    {
-                        return new(false, "User Is Not Verified, Exceed The Max Top Up Value.");
-                    }
-                }
-
-                if (userMonthTransactions.Sum(a => a.Amount) + model.TopUpValue > 3000)
-                {
-                    return new(false, "User Exceed The Max Top Up Limit Per All Beneficiaries.");
-                }
-
+                Beneficiary beneficiary = GetBeneficiaryById(model.BeneficiaryId);
                 transactions.Add(new Transaction
                 {
                     Id = Guid.NewGuid(),
@@ -120,7 +78,6 @@ namespace TopUpService.Infrastructure.Repositiory
                 beneficiary.Balance += model.TopUpValue - 1;
 
                 return new(true);
-
             }
             catch (Exception ex)
             {
@@ -140,6 +97,19 @@ namespace TopUpService.Infrastructure.Repositiory
                 _logger.LogError("Error While Getting Beneficiary Balance : {error}", ex.Message);
                 throw;
             }
+        }
+
+        public Beneficiary GetBeneficiaryById(Guid beneficiaryId)
+        {
+            return beneficiaries.FirstOrDefault(a => a.Id.Equals(beneficiaryId));
+        }
+
+        public List<Transaction> GetByUserTransactions(int userId, DateTime fromTime, DateTime toTime, Guid? beneficiaryId = null)
+        {
+            return transactions.Where(a => a.UserId.Equals(userId) &&
+                                                           a.CreatedAt >= fromTime &&
+                                                           a.CreatedAt <= toTime &&
+                                                           (!beneficiaryId.HasValue || a.BeneficiaryId == beneficiaryId)).ToList();
         }
     }
 }
