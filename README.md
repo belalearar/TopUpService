@@ -27,3 +27,6 @@ properties of the user entity.
 • The external HTTP service will be responsible for providing real-time balance information
 and debit/ credit functionality, we expect you to build this HTTP service and consume it
 within the top up feature.
+
+![image](https://github.com/belalearar/TopUpService/assets/57004181/4566d862-0518-4776-9a09-6f196cc078a0)
+
