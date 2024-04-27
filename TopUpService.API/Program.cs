@@ -1,14 +1,18 @@
+using FluentValidation;
 using Microsoft.AspNetCore.ResponseCompression;
 using Serilog;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 using TopUpService.API;
+using TopUpService.Common.RequestModel;
+using TopUpService.Common.Validator;
 using TopUpService.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 builder.Host.ConfigureServices((context, services) =>
 {
+    AddValidators(services);
     Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(context.Configuration).CreateLogger();
     services.AddResponseCompression(options =>
     {
@@ -41,3 +45,9 @@ app.MapApiEndpoints();
 
 app.UseHttpsRedirection();
 app.Run();
+
+static void AddValidators(IServiceCollection services)
+{
+    services.AddScoped<IValidator<AddNewBeneficiaryRequestModel>, AddNewBeneficiaryModelValidator>();
+    services.AddValidatorsFromAssemblyContaining<AddNewBeneficiaryModelValidator>();
+}

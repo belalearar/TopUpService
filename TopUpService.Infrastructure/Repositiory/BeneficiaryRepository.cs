@@ -1,8 +1,8 @@
-﻿using TopUpService.Common;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopUpService.Common.Entities;
 using TopUpService.Common.Repositiory;
 using TopUpService.Common.ResponseModel;
+using TopUpService.Common.RequestModel;
 
 namespace TopUpService.Infrastructure.Repositiory
 {
@@ -17,7 +17,7 @@ namespace TopUpService.Infrastructure.Repositiory
             beneficiaries = new List<Beneficiary>();
         }
 
-        public AddNewBeneficiaryResponseModel AddBeneficiary(AddNewBeneficiaryModel model)
+        public AddNewBeneficiaryResponseModel AddBeneficiary(AddNewBeneficiaryRequestModel model)
         {
             try
             {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopUpService.Common;
 using TopUpService.Common.Repositiory;
+using TopUpService.Common.RequestModel;
 using TopUpService.Common.ResponseModel;
 using TopUpService.Common.Service;
 
@@ -17,7 +18,7 @@ namespace TopUpService.Infrastructure.Service
             _beneficiaryRepository = beneficiaryRepository;
         }
 
-        public AddNewBeneficiaryResponseModel AddNewBeneficiary(AddNewBeneficiaryModel model)
+        public AddNewBeneficiaryResponseModel AddNewBeneficiary(AddNewBeneficiaryRequestModel model)
         {
             var response = _beneficiaryRepository.AddBeneficiary(model);
             return response;

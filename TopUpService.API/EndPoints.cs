@@ -1,5 +1,7 @@
-﻿using TopUpService.Common;
+﻿using FluentValidation;
+using TopUpService.Common.RequestModel;
 using TopUpService.Common.Service;
+using TopUpService.Common.Validator;
 
 namespace TopUpService.API
 {
@@ -12,8 +14,11 @@ namespace TopUpService.API
             app.MapGet("/api/get-top-up-options", GetTopUpOptions);
         }
 
-        public static async Task<IResult> AddNewBeneficiary(AddNewBeneficiaryModel model, IBeneficiaryService beneficiaryService)
+        public static async Task<IResult> AddNewBeneficiary(AddNewBeneficiaryRequestModel model, IValidator<AddNewBeneficiaryRequestModel> validator, IBeneficiaryService beneficiaryService)
         {
+            var validationResult = await validator.ValidateAsync(model);
+            if (validationResult.Errors.Any())
+                return Results.BadRequest(validationResult.ToResponse());
             var result = beneficiaryService.AddNewBeneficiary(model);
             if (result.IsSuccess)
             {
