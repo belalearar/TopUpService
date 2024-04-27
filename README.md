@@ -1,6 +1,7 @@
 User Story:
 As a user of the Edenred mobile application, I want to top up my UAE phone numbers with
 credit so I can make local phone calls.
+
 Acceptance Criteria:
 • The user can add a maximum of 5 active top-up beneficiaries.
 • Each top-up beneficiary must have a nickname with a maximum length of 20
@@ -18,6 +19,7 @@ for all beneficiaries.
 • The user can only top up with an amount equal to or less than their balance which will be
 retrieved from an external HTTP service.
 • The user's balance should be debited first before the top-up transaction is attempted.
+
 Additional Notes:
 • The user's verification status is assumed to be handled through a separate feature that is
 not within the scope of this user story, you can assume the verification flag is one of the
