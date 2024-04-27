@@ -7,6 +7,7 @@ namespace TopUpService.Common.Repositiory
     public interface IBeneficiaryRepository
     {
         GenericResponseModel AddBeneficiary(AddNewBeneficiaryRequestModel model);
+        bool CheckBeneficiaryExistance(string name);
         BeneficiaryResponseModel GetBeneficiaryBalance(Guid id);
         Beneficiary GetBeneficiaryById(Guid beneficiaryId);
         List<Beneficiary> GetByUserId(int userId);

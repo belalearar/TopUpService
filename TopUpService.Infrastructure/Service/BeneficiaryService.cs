@@ -8,7 +8,7 @@ using TopUpService.Common.Service;
 
 namespace TopUpService.Infrastructure.Service
 {
-    internal class BeneficiaryService : IBeneficiaryService
+    public class BeneficiaryService : IBeneficiaryService
     {
         private readonly ILogger<BeneficiaryService> _logger;
         private readonly IBeneficiaryRepository _beneficiaryRepository;
@@ -21,6 +21,18 @@ namespace TopUpService.Infrastructure.Service
 
         public GenericResponseModel AddNewBeneficiary(AddNewBeneficiaryRequestModel model)
         {
+            bool isExist = _beneficiaryRepository.CheckBeneficiaryExistance(model.Name);
+                
+            if (isExist)
+            {
+                return new(false, "User Already Exists.");
+            }
+            var userBeneficiaries = _beneficiaryRepository.GetByUserId(model.UserId);
+            if (userBeneficiaries.Count >= 5)
+            {
+                return new(false, "User Exceed Number Of Available Beneficiaries.");
+            }
+
             var response = _beneficiaryRepository.AddBeneficiary(model);
             return response;
         }
@@ -39,12 +51,12 @@ namespace TopUpService.Infrastructure.Service
         public BeneficiaryResponseModel GetBeneficiaryBalance(Guid id)
         {
             var response = _beneficiaryRepository.GetBeneficiaryBalance(id);
-            return (BeneficiaryResponseModel)response;
+            return response;
         }
 
         public GenericResponseModel TopUpBeneficiary(TopUpRequestModel model)
         {
-            Beneficiary beneficiary = _beneficiaryRepository.GetBeneficiaryById(model.BeneficiaryId);
+            var beneficiary = _beneficiaryRepository.GetBeneficiaryById(model.BeneficiaryId);
             if (beneficiary == null)
             {
                 return new(false, "Beneficiary Not Found.");

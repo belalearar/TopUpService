@@ -23,16 +23,6 @@ namespace TopUpService.Infrastructure.Repositiory
         {
             try
             {
-                var isExist = beneficiaries.Any(a => a.Name.Equals(model.Name, StringComparison.CurrentCultureIgnoreCase));
-                if (isExist)
-                {
-                    return new(false, "User Already Exists.");
-                }
-                var userBeneficiaries = beneficiaries.Count(a => a.UserId == model.UserId);
-                if (userBeneficiaries >= 5)
-                {
-                    return new(false, "User Exceed Number Of Available Beneficiaries.");
-                }
                 beneficiaries.Add(new Beneficiary
                 {
                     Id = Guid.NewGuid(),
@@ -110,6 +100,11 @@ namespace TopUpService.Infrastructure.Repositiory
                                                            a.CreatedAt >= fromTime &&
                                                            a.CreatedAt <= toTime &&
                                                            (!beneficiaryId.HasValue || a.BeneficiaryId == beneficiaryId)).ToList();
+        }
+
+        public bool CheckBeneficiaryExistance(string name)
+        {
+           return beneficiaries.Any(a => a.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
         }
     }
 }
