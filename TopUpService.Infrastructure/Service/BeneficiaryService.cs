@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using TopUpService.Common;
+﻿using TopUpService.Common;
+using TopUpService.Common.Service;
 using TopUpService.Common.Entities;
+using Microsoft.Extensions.Logging;
 using TopUpService.Common.Repositiory;
 using TopUpService.Common.RequestModel;
 using TopUpService.Common.ResponseModel;
-using TopUpService.Common.Service;
 
 namespace TopUpService.Infrastructure.Service
 {
@@ -90,7 +90,7 @@ namespace TopUpService.Infrastructure.Service
                 }
             }
 
-            if (userMonthTransactions.Sum(a => a.Amount) + model.TopUpValue > 3000)
+            if ((userMonthTransactions.Sum(a => a.Amount) + model.TopUpValue) > 3000)
             {
                 return new(false, "User Exceed The Max Top Up Limit Per All Beneficiaries.");
             }

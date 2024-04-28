@@ -14,9 +14,9 @@ namespace TopUpService.API
         {
             app.MapPost("/api/beneficiary", AddNewBeneficiary);
             app.MapGet("/api/get-all-by-user", GetAllUserBeneficiaries);
+            app.MapGet("/api/balance", GetBeneficiaryBalance);
             app.MapGet("/api/get-top-up-options", GetTopUpOptions);
             app.MapPost("/api/top-up", TopUp);
-            app.MapGet("/api/balance", GetBeneficiaryBalance);
         }
 
         public static async Task<IResult> AddNewBeneficiary(AddNewBeneficiaryRequestModel model, IValidator<AddNewBeneficiaryRequestModel> validator, IBeneficiaryService beneficiaryService)

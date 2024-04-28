@@ -157,6 +157,155 @@ namespace TopUpService.API.Test.Services
             Assert.Equal(response.Message, result.Message);
         }
 
+        [Fact]
+        public void TopUpBeneficiary_should_return_false_Top_up_value_bigger_than_balance()
+        {
+            //Arrange
+            var result = new GenericResponseModel(false, "Top Up Value Should Be Less Than Or Equal Balance.");
 
+            var request = new TopUpRequestModel
+            {
+                BeneficiaryId = Guid.Empty,
+                IsVerified = true,
+                TopUpValue = 0,
+                UserId = 150
+            };
+
+            _beneficiaryRepository.Setup(a => a.TopUpBeneficiary(It.IsAny<TopUpRequestModel>())).Returns(result);
+            _beneficiaryRepository.Setup(a => a.GetBeneficiaryById(It.IsAny<Guid>())).Returns(new Beneficiary
+            {
+                Id = Guid.Empty,
+                UserId = 1,
+                Name = "Test",
+                Balance = 100
+            });
+            _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(new List<Transaction>());
+            _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid?>())).Returns(new List<Transaction>());
+
+            //Act
+            var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
+            var response = service.TopUpBeneficiary(request);
+
+            //Assert
+            _beneficiaryRepository.Verify(a => a.TopUpBeneficiary(It.Is<TopUpRequestModel>(a => a.TopUpValue == request.TopUpValue)), Times.Once);
+            Assert.False(response.IsSuccess);
+            Assert.Equal(response.Message, result.Message);
+        }
+
+        [Fact]
+        public void TopUpBeneficiary_should_return_false_VeryfiedUserMax500()
+        {
+            //Arrange
+            var result = new GenericResponseModel(false, "User Is Verified, Exceed The Max Top Up Value.");
+
+            var request = new TopUpRequestModel
+            {
+                BeneficiaryId = Guid.Empty,
+                IsVerified = true,
+                TopUpValue = 600,
+                UserId = 1
+            };
+
+            _beneficiaryRepository.Setup(a => a.TopUpBeneficiary(It.IsAny<TopUpRequestModel>())).Returns(result);
+            _beneficiaryRepository.Setup(a => a.GetBeneficiaryById(It.IsAny<Guid>())).Returns(new Beneficiary
+            {
+                Id = Guid.Empty,
+                UserId = 1,
+                Name = "Test",
+                Balance = 0
+            });
+            _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(new List<Transaction>());
+            _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid?>())).Returns(new List<Transaction>());
+
+            //Act
+            var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
+            var response = service.TopUpBeneficiary(request);
+
+            //Assert
+            _beneficiaryRepository.Verify(a => a.TopUpBeneficiary(It.Is<TopUpRequestModel>(a => a.TopUpValue == request.TopUpValue)), Times.Never);
+            Assert.False(response.IsSuccess);
+            Assert.Equal(response.Message, result.Message);
+        }
+
+        [Fact]
+        public void TopUpBeneficiary_should_return_false_NotVeryfiedUserMax1000()
+        {
+            //Arrange
+            var result = new GenericResponseModel(false, "User Is Not Verified, Exceed The Max Top Up Value.");
+
+            var request = new TopUpRequestModel
+            {
+                BeneficiaryId = Guid.Empty,
+                IsVerified = false,
+                TopUpValue = 1500,
+                UserId = 1
+            };
+
+            _beneficiaryRepository.Setup(a => a.TopUpBeneficiary(It.IsAny<TopUpRequestModel>())).Returns(result);
+            _beneficiaryRepository.Setup(a => a.GetBeneficiaryById(It.IsAny<Guid>())).Returns(new Beneficiary
+            {
+                Id = Guid.Empty,
+                UserId = 1,
+                Name = "Test",
+                Balance = 0
+            });
+            _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(new List<Transaction>());
+            _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid?>())).Returns(new List<Transaction>());
+
+            //Act
+            var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
+            var response = service.TopUpBeneficiary(request);
+
+            //Assert
+            _beneficiaryRepository.Verify(a => a.TopUpBeneficiary(It.Is<TopUpRequestModel>(a => a.TopUpValue == request.TopUpValue)), Times.Never);
+            Assert.False(response.IsSuccess);
+            Assert.Equal(response.Message, result.Message);
+        }
+
+        [Fact]
+        public void TopUpBeneficiary_should_return_false_UserMax3000()
+        {
+            //Arrange
+            var result = new GenericResponseModel(false, "User Exceed The Max Top Up Limit Per All Beneficiaries.");
+
+            var request = new TopUpRequestModel
+            {
+                BeneficiaryId = Guid.Empty,
+                IsVerified = false,
+                TopUpValue = 100,
+                UserId = 1
+            };
+
+            _beneficiaryRepository.Setup(a => a.TopUpBeneficiary(It.IsAny<TopUpRequestModel>())).Returns(result);
+            _beneficiaryRepository.Setup(a => a.GetBeneficiaryById(It.IsAny<Guid>())).Returns(new Beneficiary
+            {
+                Id = Guid.Empty,
+                UserId = 1,
+                Name = "Test",
+                Balance = 0
+            });
+            _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(new List<Transaction>());
+            _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), null)).Returns(new List<Transaction> { new Transaction { Amount = 3000, UserId = 1, BeneficiaryId = Guid.Empty, FeeAmount = 1 } });
+
+            //Act
+            var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
+            var response = service.TopUpBeneficiary(request);
+
+            //Assert
+            _beneficiaryRepository.Verify(a => a.TopUpBeneficiary(It.Is<TopUpRequestModel>(a => a.TopUpValue == request.TopUpValue)), Times.Never);
+            Assert.False(response.IsSuccess);
+            Assert.Equal(response.Message, result.Message);
+        }
+
+        [Fact]
+        public void GetAllTopUpOptions_should_return_all_top_up_options()
+        {
+            //Arrange
+            //Act
+            var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
+            var response = service.GetAllTopUpOptions();
+            //Assert
+            Assert.NotEmpty(response);
+        }
     }
 }

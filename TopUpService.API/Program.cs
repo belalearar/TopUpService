@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.ResponseCompression;
 using Serilog;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 using TopUpService.API;
@@ -50,4 +51,10 @@ static void AddValidators(IServiceCollection services)
 {
     services.AddScoped<IValidator<AddNewBeneficiaryRequestModel>, AddNewBeneficiaryModelValidator>();
     services.AddValidatorsFromAssemblyContaining<AddNewBeneficiaryModelValidator>();
+}
+
+[ExcludeFromCodeCoverage]
+public partial class Programe
+{
+
 }
