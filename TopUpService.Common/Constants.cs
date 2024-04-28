@@ -11,7 +11,7 @@
         public static readonly string AED100 = "AED 100";
         public static List<string> GetTopUpOptions()
         {
-            return new List<string> { AED5, AED10, AED20, AED30, AED50, AED75, AED100 };
+            return [AED5, AED10, AED20, AED30, AED50, AED75, AED100];
         }
     }
 }

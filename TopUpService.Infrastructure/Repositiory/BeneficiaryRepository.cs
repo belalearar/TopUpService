@@ -1,29 +1,29 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopUpService.Common.Entities;
 using TopUpService.Common.Repositiory;
-using TopUpService.Common.ResponseModel;
 using TopUpService.Common.RequestModel;
+using TopUpService.Common.ResponseModel;
 
 namespace TopUpService.Infrastructure.Repositiory
 {
     internal class BeneficiaryRepository : IBeneficiaryRepository
     {
-        private List<Beneficiary> beneficiaries;
-        private List<Transaction> transactions;
-        private List<TopUpUser> users;
+        private readonly List<Beneficiary> beneficiaries;
+        private readonly List<Transaction> transactions;
+        private readonly List<TopUpUser> users;
         private readonly ILogger<BeneficiaryRepository> _logger;
 
         public BeneficiaryRepository(ILogger<BeneficiaryRepository> logger)
         {
             _logger = logger;
-            beneficiaries = new List<Beneficiary>();
-            transactions = new List<Transaction>();
-            users = new List<TopUpUser>
-            {
+            beneficiaries = [];
+            transactions = [];
+            users =
+            [
                 new TopUpUser { Id = 1, Balance = 2000, Name = "User1" },
                 new TopUpUser { Id = 2, Balance = 3000, Name = "User2" },
                 new TopUpUser { Id = 3, Balance = 5000, Name = "User3" },
-            };
+            ];
         }
 
         public GenericResponseModel AddBeneficiary(AddNewBeneficiaryRequestModel model)

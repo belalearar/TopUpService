@@ -11,13 +11,14 @@ namespace TopUpService.Common.ResponseModel
 
         public static implicit operator BeneficiaryResponseModel?(Beneficiary? source)
         {
-            if (source == null) return null;
-            return new BeneficiaryResponseModel
-            {
-                Id = source.Id,
-                Name = source.Name,
-                Balance = source.Balance,
-            };
+            return source == null
+                ? null
+                : new BeneficiaryResponseModel
+                {
+                    Id = source.Id,
+                    Name = source.Name,
+                    Balance = source.Balance,
+                };
         }
     }
 }
