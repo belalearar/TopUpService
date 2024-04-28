@@ -137,6 +137,7 @@ namespace TopUpService.API.Test.Services
             };
 
             _beneficiaryRepository.Setup(a => a.TopUpBeneficiary(It.IsAny<TopUpRequestModel>())).Returns(result);
+            _beneficiaryRepository.Setup(a => a.WithdrawUserBalance(It.IsAny<int>(), It.IsAny<decimal>(), It.IsAny<int>())).Returns(result);
             _beneficiaryRepository.Setup(a => a.GetBeneficiaryById(It.IsAny<Guid>())).Returns(new Beneficiary
             {
                 Id = Guid.Empty,
@@ -146,6 +147,7 @@ namespace TopUpService.API.Test.Services
             });
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(new List<Transaction>());
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid?>())).Returns(new List<Transaction>());
+            _beneficiaryRepository.Setup(a => a.GetUserById(It.IsAny<int>())).Returns(new TopUpUser { Balance = 1000, Id = 1, Name = "TestUser" });
 
             //Act
             var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
@@ -153,6 +155,8 @@ namespace TopUpService.API.Test.Services
 
             //Assert
             _beneficiaryRepository.Verify(a => a.TopUpBeneficiary(It.Is<TopUpRequestModel>(a => a.TopUpValue == request.TopUpValue)), Times.Once);
+            _beneficiaryRepository.Verify(a => a.WithdrawUserBalance(request.UserId, request.TopUpValue, 1), Times.Once);
+            _beneficiaryRepository.Verify(a => a.GetUserById(1), Times.Once);
             Assert.True(response.IsSuccess);
             Assert.Equal(response.Message, result.Message);
         }
@@ -167,11 +171,12 @@ namespace TopUpService.API.Test.Services
             {
                 BeneficiaryId = Guid.Empty,
                 IsVerified = true,
-                TopUpValue = 0,
-                UserId = 150
+                TopUpValue = 150,
+                UserId = 1
             };
 
             _beneficiaryRepository.Setup(a => a.TopUpBeneficiary(It.IsAny<TopUpRequestModel>())).Returns(result);
+            _beneficiaryRepository.Setup(a => a.WithdrawUserBalance(It.IsAny<int>(), It.IsAny<decimal>(), It.IsAny<int>())).Returns(result);
             _beneficiaryRepository.Setup(a => a.GetBeneficiaryById(It.IsAny<Guid>())).Returns(new Beneficiary
             {
                 Id = Guid.Empty,
@@ -181,13 +186,14 @@ namespace TopUpService.API.Test.Services
             });
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(new List<Transaction>());
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid?>())).Returns(new List<Transaction>());
+            _beneficiaryRepository.Setup(a => a.GetUserById(It.IsAny<int>())).Returns(new TopUpUser { Balance = 1000, Id = 1, Name = "TestUser" });
 
             //Act
             var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
             var response = service.TopUpBeneficiary(request);
 
             //Assert
-            _beneficiaryRepository.Verify(a => a.TopUpBeneficiary(It.Is<TopUpRequestModel>(a => a.TopUpValue == request.TopUpValue)), Times.Once);
+            _beneficiaryRepository.Verify(a => a.TopUpBeneficiary(It.Is<TopUpRequestModel>(a => a.TopUpValue == request.TopUpValue)), Times.Never);
             Assert.False(response.IsSuccess);
             Assert.Equal(response.Message, result.Message);
         }
@@ -216,6 +222,7 @@ namespace TopUpService.API.Test.Services
             });
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(new List<Transaction>());
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid?>())).Returns(new List<Transaction>());
+            _beneficiaryRepository.Setup(a => a.GetUserById(It.IsAny<int>())).Returns(new TopUpUser { Balance = 1000, Id = 1, Name = "TestUser" });
 
             //Act
             var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
@@ -251,6 +258,7 @@ namespace TopUpService.API.Test.Services
             });
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(new List<Transaction>());
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid?>())).Returns(new List<Transaction>());
+            _beneficiaryRepository.Setup(a => a.GetUserById(It.IsAny<int>())).Returns(new TopUpUser { Balance = 5000, Id = 1, Name = "TestUser" });
 
             //Act
             var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
@@ -286,6 +294,7 @@ namespace TopUpService.API.Test.Services
             });
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<Guid>())).Returns(new List<Transaction>());
             _beneficiaryRepository.Setup(a => a.GetByUserTransactions(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), null)).Returns(new List<Transaction> { new Transaction { Amount = 3000, UserId = 1, BeneficiaryId = Guid.Empty, FeeAmount = 1 } });
+            _beneficiaryRepository.Setup(a => a.GetUserById(It.IsAny<int>())).Returns(new TopUpUser { Balance = 1000, Id = 1, Name = "TestUser" });
 
             //Act
             var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
@@ -306,6 +315,28 @@ namespace TopUpService.API.Test.Services
             var response = service.GetAllTopUpOptions();
             //Assert
             Assert.NotEmpty(response);
+        }
+
+        [Fact]
+        public void GetTopUpUser_should_return_user()
+        {
+            //Arrange
+            var user = new TopUpUser
+            {
+                Balance = 500,
+                Id = 1,
+                Name = "Test"
+            };
+            _beneficiaryRepository.Setup(a => a.GetUserById(It.IsAny<int>())).Returns(user);
+
+            //Act
+            var service = new BeneficiaryService(_logger.Object, _beneficiaryRepository.Object);
+            var response = service.GetTopUpUser(1);
+
+            //Assert
+            Assert.Equal(user.Balance, response.Balance);
+            Assert.Equal(user.Name, response.Name);
+            Assert.Equal(user.Id, response.Id);
         }
     }
 }

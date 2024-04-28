@@ -22,13 +22,13 @@ namespace TopUpService.Infrastructure.Service
         public GenericResponseModel AddNewBeneficiary(AddNewBeneficiaryRequestModel model)
         {
             bool isExist = _beneficiaryRepository.CheckBeneficiaryExistance(model.Name);
-                
+
             if (isExist)
             {
                 return new(false, "User Already Exists.");
             }
             var userBeneficiaries = _beneficiaryRepository.GetByUserId(model.UserId);
-            if (userBeneficiaries.Count >= 5)
+            if (userBeneficiaries.Count >= 5)//max user beneficiaries 5
             {
                 return new(false, "User Exceed Number Of Available Beneficiaries.");
             }
@@ -42,13 +42,13 @@ namespace TopUpService.Infrastructure.Service
             return Constants.GetTopUpOptions();
         }
 
-        public List<BeneficiaryResponseModel> GetAllUserBeneficiaries(int userId)
+        public List<BeneficiaryResponseModel?> GetAllUserBeneficiaries(int userId)
         {
             var response = _beneficiaryRepository.GetByUserId(userId);
-            return response.Select(a => (BeneficiaryResponseModel)a).ToList();
+            return response.Select(a => (BeneficiaryResponseModel?)a).ToList();
         }
 
-        public BeneficiaryResponseModel GetBeneficiaryBalance(Guid id)
+        public BeneficiaryResponseModel? GetBeneficiaryBalance(Guid id)
         {
             var response = _beneficiaryRepository.GetBeneficiaryBalance(id);
             return response;
@@ -61,28 +61,34 @@ namespace TopUpService.Infrastructure.Service
             {
                 return new(false, "Beneficiary Not Found.");
             }
-
-            if (beneficiary.Balance != 0 && model.TopUpValue > beneficiary.Balance)
+            var user = _beneficiaryRepository.GetUserById(model.UserId);
+            if (user == null)
             {
-                return new(false, "Top Up Value Should Be Less Than Or Equal Balance.");
+                return new GenericResponseModel(false, "User Not Found");
+            }
+
+            if (user.Balance < model.TopUpValue + 1)
+            {
+                return new GenericResponseModel(false, "Top Up Value Should Be Less Than Or Equal Balance.");
             }
 
             var fromTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             var toTime = fromTime.AddMonths(1).AddDays(-1);
 
-            List<Transaction> userTransactions = _beneficiaryRepository.GetByUserTransactions(model.UserId, fromTime, toTime,beneficiary.Id);
+            //Get All Beneficiary Transactions This Month
+            var userTransactions = _beneficiaryRepository.GetByUserTransactions(model.UserId, fromTime, toTime, beneficiary.Id);
 
-
+            //Get All User Transactions For All Beneficiaries This Month
             var userMonthTransactions = _beneficiaryRepository.GetByUserTransactions(model.UserId, fromTime, toTime);
-            
-            if (model.IsVerified)
+
+            if (model.IsVerified)//if user verified max 500 AED per beneficiary per month
             {
                 if (userTransactions.Sum(a => a.Amount) + model.TopUpValue > 500)
                 {
                     return new(false, "User Is Verified, Exceed The Max Top Up Value.");
                 }
             }
-            else
+            else//if user not verified max 1000 AED per beneficiary per month
             {
                 if (userTransactions.Sum(a => a.Amount) + model.TopUpValue > 1000)
                 {
@@ -90,13 +96,29 @@ namespace TopUpService.Infrastructure.Service
                 }
             }
 
+            //max user top up for all beneficiaries in month
             if ((userMonthTransactions.Sum(a => a.Amount) + model.TopUpValue) > 3000)
             {
                 return new(false, "User Exceed The Max Top Up Limit Per All Beneficiaries.");
             }
-
-            GenericResponseModel response = _beneficiaryRepository.TopUpBeneficiary(model);
+            //withdraw amount from user before top up the beneficiary
+            var withdrawUserBalace = _beneficiaryRepository.WithdrawUserBalance(user.Id, model.TopUpValue, 1);
+            if (!withdrawUserBalace.IsSuccess)
+            {
+                return withdrawUserBalace;
+            }
+            //top up beneficiary
+            var response = _beneficiaryRepository.TopUpBeneficiary(model);
+            if (!response.IsSuccess)
+            {
+                _beneficiaryRepository.WithdrawUserBalance(user.Id, model.TopUpValue * -1, -1);
+            }
             return response;
+        }
+
+        public TopUpUser? GetTopUpUser(int userId)
+        {
+            return _beneficiaryRepository.GetUserById(userId) ?? null;
         }
     }
 }

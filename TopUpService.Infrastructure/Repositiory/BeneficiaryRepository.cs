@@ -10,6 +10,7 @@ namespace TopUpService.Infrastructure.Repositiory
     {
         private List<Beneficiary> beneficiaries;
         private List<Transaction> transactions;
+        private List<TopUpUser> users;
         private readonly ILogger<BeneficiaryRepository> _logger;
 
         public BeneficiaryRepository(ILogger<BeneficiaryRepository> logger)
@@ -17,6 +18,12 @@ namespace TopUpService.Infrastructure.Repositiory
             _logger = logger;
             beneficiaries = new List<Beneficiary>();
             transactions = new List<Transaction>();
+            users = new List<TopUpUser>
+            {
+                new TopUpUser { Id = 1, Balance = 2000, Name = "User1" },
+                new TopUpUser { Id = 2, Balance = 3000, Name = "User2" },
+                new TopUpUser { Id = 3, Balance = 5000, Name = "User3" },
+            };
         }
 
         public GenericResponseModel AddBeneficiary(AddNewBeneficiaryRequestModel model)
@@ -56,7 +63,11 @@ namespace TopUpService.Infrastructure.Repositiory
         {
             try
             {
-                Beneficiary beneficiary = GetBeneficiaryById(model.BeneficiaryId);
+                var beneficiary = GetBeneficiaryById(model.BeneficiaryId);
+                if (beneficiary == null)
+                {
+                    return new GenericResponseModel(false, "beneficiary not found");
+                }
                 transactions.Add(new Transaction
                 {
                     Id = Guid.NewGuid(),
@@ -65,7 +76,7 @@ namespace TopUpService.Infrastructure.Repositiory
                     BeneficiaryId = model.BeneficiaryId,
                     FeeAmount = 1
                 });
-                beneficiary.Balance += model.TopUpValue - 1;
+                beneficiary.Balance += model.TopUpValue;
 
                 return new(true);
             }
@@ -76,11 +87,11 @@ namespace TopUpService.Infrastructure.Repositiory
             }
         }
 
-        public BeneficiaryResponseModel GetBeneficiaryBalance(Guid id)
+        public BeneficiaryResponseModel? GetBeneficiaryBalance(Guid id)
         {
             try
             {
-                return beneficiaries.FirstOrDefault(a => a.Id == id);
+                return beneficiaries.FirstOrDefault(a => a.Id == id) ?? null;
             }
             catch (Exception ex)
             {
@@ -89,9 +100,9 @@ namespace TopUpService.Infrastructure.Repositiory
             }
         }
 
-        public Beneficiary GetBeneficiaryById(Guid beneficiaryId)
+        public Beneficiary? GetBeneficiaryById(Guid beneficiaryId)
         {
-            return beneficiaries.FirstOrDefault(a => a.Id.Equals(beneficiaryId));
+            return beneficiaries.FirstOrDefault(a => a.Id.Equals(beneficiaryId)) ?? null;
         }
 
         public List<Transaction> GetByUserTransactions(int userId, DateTime fromTime, DateTime toTime, Guid? beneficiaryId = null)
@@ -104,7 +115,31 @@ namespace TopUpService.Infrastructure.Repositiory
 
         public bool CheckBeneficiaryExistance(string name)
         {
-           return beneficiaries.Any(a => a.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+            return beneficiaries.Any(a => a.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        public TopUpUser? GetUserById(int id)
+        {
+            return users.FirstOrDefault(a => a.Id == id);
+        }
+
+        public GenericResponseModel WithdrawUserBalance(int id, decimal topUpValue, int fee)
+        {
+            try
+            {
+                var user = GetUserById(id);
+                if (user == null)
+                {
+                    return new GenericResponseModel(false, "User Not Found");
+                }
+                user.Balance -= topUpValue + fee;
+                return new(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error While Withdraw From User Balance : {error}", ex.Message);
+                return new(false, "Error While Withdraw From User Balance");
+            }
         }
     }
 }

@@ -17,6 +17,7 @@ namespace TopUpService.API
             app.MapGet("/api/balance", GetBeneficiaryBalance);
             app.MapGet("/api/get-top-up-options", GetTopUpOptions);
             app.MapPost("/api/top-up", TopUp);
+            app.MapGet("/api/get-user-info", GetUserInfo);
         }
 
         public static async Task<IResult> AddNewBeneficiary(AddNewBeneficiaryRequestModel model, IValidator<AddNewBeneficiaryRequestModel> validator, IBeneficiaryService beneficiaryService)
@@ -35,19 +36,19 @@ namespace TopUpService.API
             }
         }
 
-        public static async Task<IResult> GetAllUserBeneficiaries(int userId, IBeneficiaryService beneficiaryService)
+        public static IResult GetAllUserBeneficiaries(int userId, IBeneficiaryService beneficiaryService)
         {
             var result = beneficiaryService.GetAllUserBeneficiaries(userId);
             return Results.Ok(result);
         }
 
-        public static async Task<IResult> GetTopUpOptions(IBeneficiaryService beneficiaryService)
+        public static IResult GetTopUpOptions(IBeneficiaryService beneficiaryService)
         {
             var result = beneficiaryService.GetAllTopUpOptions();
             return Results.Ok(result);
         }
 
-        public static async Task<IResult> GetBeneficiaryBalance(Guid id, IBeneficiaryService beneficiaryService)
+        public static IResult GetBeneficiaryBalance(Guid id, IBeneficiaryService beneficiaryService)
         {
             var result = beneficiaryService.GetBeneficiaryBalance(id);
             if (result == null)
@@ -70,6 +71,19 @@ namespace TopUpService.API
             else
             {
                 return TypedResults.BadRequest(result.Message);
+            }
+        }
+
+        public static IResult GetUserInfo(int userId, IBeneficiaryService beneficiaryService)
+        {
+            var result = beneficiaryService.GetTopUpUser(userId);
+            if (result != null)
+            {
+                return Results.Ok(result);
+            }
+            else
+            {
+                return TypedResults.NotFound();
             }
         }
 

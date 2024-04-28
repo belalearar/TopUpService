@@ -9,8 +9,9 @@ namespace TopUpService.Common.ResponseModel
         public decimal Balance { get; set; }
 
 
-        public static implicit operator BeneficiaryResponseModel(Beneficiary source)
+        public static implicit operator BeneficiaryResponseModel?(Beneficiary? source)
         {
+            if (source == null) return null;
             return new BeneficiaryResponseModel
             {
                 Id = source.Id,
